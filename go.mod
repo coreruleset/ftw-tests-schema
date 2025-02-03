@@ -1,6 +1,6 @@
 module github.com/coreruleset/ftw-tests-schema/v2
 
-go 1.21
+go 1.23.5
 
 require (
 	github.com/invopop/jsonschema v0.13.0
@@ -16,7 +16,7 @@ require (
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 )
 
-require github.com/projectdiscovery/yamldoc-go v1.0.4
+require github.com/projectdiscovery/yamldoc-go v1.0.6
 
 require (
 	github.com/stretchr/testify v1.10.0
