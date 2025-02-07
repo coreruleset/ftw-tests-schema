@@ -25,7 +25,7 @@ import (
 )
 
 var addLicenseVersion = "v1.1.1" // https://github.com/google/addlicense
-var golangCILintVer = "v1.59.1"  // https://github.com/golangci/golangci-lint/releases
+var golangCILintVer = "v1.63.4"  // https://github.com/golangci/golangci-lint/releases
 var gosImportsVer = "v0.3.8"     // https://github.com/rinchsan/gosimports/releases/tag/v0.3.8
 
 var errRunGoModTidy = errors.New("go.mod/sum not formatted, commit changes")
