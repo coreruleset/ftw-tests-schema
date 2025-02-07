@@ -25,7 +25,6 @@ import (
 )
 
 var addLicenseVersion = "v1.1.1" // https://github.com/google/addlicense
-var golangCILintVer = "v1.63.4"  // https://github.com/golangci/golangci-lint/releases
 var gosImportsVer = "v0.3.8"     // https://github.com/rinchsan/gosimports/releases/tag/v0.3.8
 
 var errRunGoModTidy = errors.New("go.mod/sum not formatted, commit changes")
@@ -65,29 +64,6 @@ func Format() error {
 		".")
 }
 
-// Lint verifies code quality.
-func Lint() error {
-	mg.SerialDeps(Generate)
-
-	if sh.Run("git", "diff", "--exit-code", "--", "'*_doc.go'") != nil {
-		return errUpdateGeneratedFiles
-	}
-
-	if err := sh.RunV("go", "run", fmt.Sprintf("github.com/golangci/golangci-lint/cmd/golangci-lint@%s", golangCILintVer), "run"); err != nil {
-		return err
-	}
-
-	if err := sh.RunV("go", "mod", "tidy"); err != nil {
-		return err
-	}
-
-	if sh.Run("git", "diff", "--exit-code", "go.mod", "go.sum") != nil {
-		return errRunGoModTidy
-	}
-
-	return nil
-}
-
 // Test runs all tests.
 func Test() error {
 	mg.SerialDeps(Generate)
@@ -119,11 +95,6 @@ func Markdown() error {
 
 	return nil
 
-}
-
-// Check runs lint and tests.
-func Check() {
-	mg.SerialDeps(Lint, Test)
 }
 
 // Writes JSON schemas based on the current version.

@@ -10,15 +10,17 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Install Go
         uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5
-        env:
-          GOBIN: /home/runner/go/bin
         with:
-          go-version: v1.21.x
+          go-version: v1.23.x
           cache: true
       - name: setup
         run: |
           go install github.com/projectdiscovery/yamldoc-go/cmd/docgen/dstdocgen@latest
-      - name: lint
-        run: go run mage.go lint
+      - name: generate
+        run: go run mage.go generate
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@971e284b6050e8a5849b72094c50ab08da042db8 # v6
+        with:
+          version: v1.63.4
       - name: markdown
         run: go run mage.go markdown >> $GITHUB_STEP_SUMMARY
