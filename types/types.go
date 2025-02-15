@@ -238,7 +238,18 @@ type Input struct {
 	// examples:
 	//   - name: Headers
 	//     value: ExampleHeaders
+	//
+	// Deprecated: use OrderedHeaders instead
 	Headers map[string]string `yaml:"headers,omitempty" json:"headers,omitempty" koanf:"headers,omitempty"`
+
+	// description: |
+	//   Headers allows you to declare headers that the test should send.
+	//   The headers will be sent in the exact order specified. It is also possible
+	//   to specify the identical header multiple times.
+	// examples:
+	//   - name: Headers
+	//     value: ExampleOrderedHeaders
+	OrderedHeaders []HeaderTuple `yaml:"ordered_headers,omitempty" json:"ordered_headers,omitempty" koanf:"ordered_headers,omitempty"`
 
 	// description: |
 	//   Data allows you to declare the payload that the test should in the request body.
@@ -448,4 +459,10 @@ type Log struct {
 	// examples:
 	//   - value: ExampleLog.NoMatchRegex
 	NoMatchRegex string `yaml:"no_match_regex,omitempty" json:"no_match_regex,omitempty"`
+}
+
+// Header represents the (name, value) tuple of an HTTP header
+type HeaderTuple struct {
+	Name  string
+	Value string
 }
