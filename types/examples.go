@@ -27,6 +27,12 @@ var (
 		"Host":       "localhost",
 		"Accept":     "*/*",
 	}
+	ExampleOrderedHeaders = []HeaderTuple{
+		{"Host", "localhost"},
+		{"User-Agent", "CRS Tests"},
+		{"Host", "localhost"},
+		{"Accept", "*/*"},
+	}
 	ExampleInput = Input{
 		DestAddr:            helpers.StrPtr("192.168.0.1"),
 		Port:                helpers.IntPtr(8080),
