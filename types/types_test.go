@@ -33,6 +33,7 @@ tests:
             Accept: "*/*"
           encoded_request: "TXkgRGF0YQo="
           uri: "/test"
+          uris: ["/test", "/multiple", "/uris"]
           protocol: "http"
           autocomplete_headers: false
           stop_magic: true
@@ -84,6 +85,8 @@ var ftwTest = &FTWTest{
 					Input: Input{
 						DestAddr: helpers.StrPtr("127.0.0.1"),
 						Port:     helpers.IntPtr(80),
+						URI:      helpers.StrPtr("/test"),
+						URIs:     []string{"/test", "/multiple", "/uris"},
 						Method:   helpers.StrPtr("OPTIONS"),
 						Headers: map[string]string{
 							"User-Agent": "FTW Schema Tests",
@@ -124,6 +127,8 @@ func TestUnmarshalFTWTest(t *testing.T) {
 			expectedStage := expectedTest.Stages[j]
 			assertions.Equal(expectedStage.Input.DestAddr, stage.Input.DestAddr)
 			assertions.Equal(expectedStage.Input.Port, stage.Input.Port)
+			assertions.Equal(expectedStage.Input.URI, stage.Input.URI)
+			assertions.Equal(expectedStage.Input.URIs, stage.Input.URIs)
 			assertions.Equal(expectedStage.Input.Method, stage.Input.Method)
 			assertions.Len(stage.Input.Headers, len(expectedStage.Input.Headers))
 

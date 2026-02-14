@@ -206,8 +206,17 @@ type Input struct {
 	//   URI allows you to declare the URI the test should use as part of the request line.
 	// examples:
 	//   - name: URI
-	//     value: "\"/get?hello=world\""
+	//     value: '/get?hello=world"
 	URI *string `yaml:"uri,omitempty" json:"uri,omitempty" koanf:"uri,omitempty"`
+
+	// description: |
+	//   URIs is a list of URIs that the test should use as part of the request line.
+	//   If URIs is set, URI will be ignored. URIs is useful for tests that need to send multiple requests.
+	//   Caveat: you cannot change the method or headers between requests.
+	// examples:
+	//   - name: URIs
+	//     value: ['/get?hello=world', '/request/this?var=value']
+	URIs []string `yaml:"uris,omitempty" json:"uris,omitempty" koanf:"uris,omitempty"`
 
 	// description: |
 	//   FollowRedirect will expect the previous stage of the same test to have received a
@@ -362,7 +371,7 @@ type Response struct {
 
 	// description: |
 	//   LogMessage specifies a message to be printed in the log of the backend server that sends the response.
-	//   This can be helpful when debugging, to match resopnses sent by the backend to test executions.
+	//   This can be helpful when debugging, to match responses sent by the backend to test executions.
 	// examples:
 	//   - name: LogMessage
 	//     value: "\"Response splitting test 1\""
