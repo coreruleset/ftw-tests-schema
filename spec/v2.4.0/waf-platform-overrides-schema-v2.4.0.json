@@ -1,0 +1,142 @@
+{
+  "$defs": {
+    "FTWOverrides": {
+      "additionalProperties": false,
+      "properties": {
+        "meta": {
+          "$ref": "#/$defs/FTWOverridesMeta"
+        },
+        "test_overrides": {
+          "items": {
+            "$ref": "#/$defs/TestOverride"
+          },
+          "type": "array"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "meta",
+        "test_overrides"
+      ],
+      "type": "object"
+    },
+    "FTWOverridesMeta": {
+      "additionalProperties": false,
+      "properties": {
+        "annotations": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "engine": {
+          "type": "string"
+        },
+        "platform": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "engine",
+        "platform",
+        "annotations"
+      ],
+      "type": "object"
+    },
+    "Log": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_ids": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "match_regex": {
+          "type": "string"
+        },
+        "no_expect_ids": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "no_match_regex": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Output": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_error": {
+          "type": "boolean"
+        },
+        "isolated": {
+          "type": "boolean"
+        },
+        "log": {
+          "$ref": "#/$defs/Log"
+        },
+        "log_contains": {
+          "type": "string"
+        },
+        "no_log_contains": {
+          "type": "string"
+        },
+        "response_contains": {
+          "type": "string"
+        },
+        "retry_once": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "TestOverride": {
+      "additionalProperties": false,
+      "properties": {
+        "output": {
+          "$ref": "#/$defs/Output"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "retry_once": {
+          "type": "boolean"
+        },
+        "rule_id": {
+          "type": "integer"
+        },
+        "stage_ids": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "test_ids": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "rule_id",
+        "reason",
+        "output"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/coreruleset/ftw-tests-schema/v2/types/overrides/ftw-overrides",
+  "$ref": "#/$defs/FTWOverrides",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

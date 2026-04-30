@@ -79,6 +79,27 @@ type FTWTestMeta struct {
 	Tags []string `yaml:"tags,omitempty" json:"tags,omitempty"`
 }
 
+// TemplateKey defines a template variable with a name and a list of possible values.
+// Tests that use template variables will be expanded into multiple test instances,
+// one for each combination of values (i.e., the cross-product of all template values).
+type TemplateKey struct {
+	// description: |
+	//   Key is the name of the template variable. It can be referenced in input fields
+	//   using Go template syntax, e.g. `{{ .key }}`.
+	// examples:
+	//   - name: Key
+	//     value: "\"uri\""
+	Key string `yaml:"key" json:"key"`
+
+	// description: |
+	//   Values is the list of values the template variable can take.
+	//   A test instance will be generated for each combination of values across all template keys.
+	// examples:
+	//   - name: Values
+	//     value: ["\"/get\"", "\"/get?foo=bar\""]
+	Values []string `yaml:"values" json:"values"`
+}
+
 // Test is an individual test case. One test can have multiple stages.
 type Test struct {
 	// description: |
@@ -128,6 +149,16 @@ type Test struct {
 	//   - name: Tags
 	//     value: ["PHP", "bug-123"]
 	Tags []string `yaml:"tags,omitempty" json:"tags,omitempty"`
+
+	// description: |
+	//   Templates defines a list of template variables and their possible values.
+	//   When templates are defined, the test is expanded into multiple test instances
+	//   representing the cross-product of all template variable values.
+	//   Input fields may reference template variables using Go template syntax,
+	//   e.g. `{{ .uri }}` or `{{ .command }}`.
+	// examples:
+	//   - value: ExampleTemplates
+	Templates []TemplateKey `yaml:"templates,omitempty" json:"templates,omitempty"`
 }
 
 // IdString prints the human readable ID of a test in the format

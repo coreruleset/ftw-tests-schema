@@ -14,6 +14,39 @@ var (
 		TestDescription: "Unix RCE using `time`",
 		Stages:          ExampleStages,
 	}
+	ExampleTemplateTest = Test{
+		TestTitle:       "123456-2",
+		TestDescription: "Unix RCE using template variables",
+		Templates:       ExampleTemplates,
+		Stages:          ExampleTemplateStages,
+	}
+	ExampleTemplates = []TemplateKey{
+		{
+			Key:    "uri",
+			Values: []string{"/get", "/get?foo=bar"},
+		},
+		{
+			Key:    "command",
+			Values: []string{"php", "php%20foo"},
+		},
+	}
+	ExampleTemplateInput = Input{
+		DestAddr: helpers.StrPtr("192.168.0.1"),
+		Port:     helpers.IntPtr(8080),
+		Protocol: helpers.StrPtr("http"),
+		URI:      helpers.StrPtr("{{ .uri }}"),
+		Method:   helpers.StrPtr("POST"),
+		Data:     helpers.StrPtr("cmd={{ .command }}"),
+		Headers:  ExampleHeaders,
+	}
+	ExampleTemplateStage = Stage{
+		Description: "Template stage",
+		Input:       ExampleTemplateInput,
+		Output:      ExampleOutput,
+	}
+	ExampleTemplateStages = []Stage{
+		ExampleTemplateStage,
+	}
 	ExampleStage = Stage{
 		Description: "Get cookie from server",
 		Input:       ExampleInput,

@@ -1,0 +1,289 @@
+{
+  "$defs": {
+    "FTWTest": {
+      "additionalProperties": false,
+      "properties": {
+        "meta": {
+          "$ref": "#/$defs/FTWTestMeta"
+        },
+        "rule_id": {
+          "type": "integer"
+        },
+        "tests": {
+          "items": {
+            "$ref": "#/$defs/Test"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "meta",
+        "rule_id",
+        "tests"
+      ],
+      "type": "object"
+    },
+    "FTWTestMeta": {
+      "additionalProperties": false,
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "HeaderTuple": {
+      "additionalProperties": false,
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Name",
+        "Value"
+      ],
+      "type": "object"
+    },
+    "Input": {
+      "additionalProperties": false,
+      "properties": {
+        "autocomplete_headers": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "string"
+        },
+        "dest_addr": {
+          "type": "string"
+        },
+        "encoded_data": {
+          "type": "string"
+        },
+        "encoded_request": {
+          "type": "string"
+        },
+        "follow_redirect": {
+          "type": "boolean"
+        },
+        "headers": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "method": {
+          "type": "string"
+        },
+        "ordered_headers": {
+          "items": {
+            "$ref": "#/$defs/HeaderTuple"
+          },
+          "type": "array"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "response": {
+          "$ref": "#/$defs/Response"
+        },
+        "save_cookie": {
+          "type": "boolean"
+        },
+        "stop_magic": {
+          "type": "boolean"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "virtual_host_mode": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "Log": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_ids": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "match_regex": {
+          "type": "string"
+        },
+        "no_expect_ids": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "no_match_regex": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Output": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_error": {
+          "type": "boolean"
+        },
+        "isolated": {
+          "type": "boolean"
+        },
+        "log": {
+          "$ref": "#/$defs/Log"
+        },
+        "log_contains": {
+          "type": "string"
+        },
+        "no_log_contains": {
+          "type": "string"
+        },
+        "response_contains": {
+          "type": "string"
+        },
+        "retry_once": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "Response": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "type": "string"
+        },
+        "encoded_body": {
+          "type": "string"
+        },
+        "headers": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "log_message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "Stage": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/$defs/Input"
+        },
+        "output": {
+          "$ref": "#/$defs/Output"
+        }
+      },
+      "required": [
+        "input",
+        "output"
+      ],
+      "type": "object"
+    },
+    "TemplateKey": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "key",
+        "values"
+      ],
+      "type": "object"
+    },
+    "Test": {
+      "additionalProperties": false,
+      "properties": {
+        "desc": {
+          "type": "string"
+        },
+        "stages": {
+          "items": {
+            "$ref": "#/$defs/Stage"
+          },
+          "type": "array"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "templates": {
+          "items": {
+            "$ref": "#/$defs/TemplateKey"
+          },
+          "type": "array"
+        },
+        "test_id": {
+          "type": "integer"
+        },
+        "test_title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "test_id",
+        "stages"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/coreruleset/ftw-tests-schema/v2/types/ftw-test",
+  "$ref": "#/$defs/FTWTest",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
