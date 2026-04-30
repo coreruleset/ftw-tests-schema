@@ -4,7 +4,7 @@ go 1.23.5
 
 require (
 	github.com/invopop/jsonschema v0.13.0
-	github.com/magefile/mage v1.15.0
+	github.com/magefile/mage v1.17.2
 )
 
 require (
