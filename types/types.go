@@ -203,12 +203,13 @@ type Input struct {
 	//   URI allows you to declare the URI the test should use as part of the request line.
 	// examples:
 	//   - name: URI
-	//     value: '/get?hello=world"
+	//     value: '/get?hello=world'
 	URI *string `yaml:"uri,omitempty" json:"uri,omitempty" koanf:"uri,omitempty"`
 
 	// description: |
 	//   URIs is a list of URIs that the test should use as part of the request line.
-	//   If URIs is set, URI will be ignored. URIs is useful for tests that need to send multiple requests.
+	//   If URIs is set, URI will be ignored. URIs is useful for running the same test against multiple URIs, e.g., when
+	//   matching on URI paths.
 	//   Caveat: you cannot change the method or headers between requests.
 	// examples:
 	//   - name: URIs
