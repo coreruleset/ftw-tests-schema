@@ -1,8 +1,6 @@
 // Copyright 2023 OWASP CRS
 // SPDX-License-Identifier: Apache-2.0
 
-//go:generate dstdocgen -package overrides -path . -structure FTWOverrides -output ./overrides_doc.go
-
 package overrides
 
 import (

@@ -1,8 +1,6 @@
 // Copyright 2023 OWASP CRS
 // SPDX-License-Identifier: Apache-2.0
 
-//go:generate dstdocgen -package types -path . -structure FTWTest -output ./test_doc.go
-
 package types
 
 import "fmt"
