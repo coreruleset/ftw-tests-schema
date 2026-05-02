@@ -100,6 +100,88 @@ var ftwTest = &FTWTest{
 	},
 }
 
+var templateTestYaml = `---
+meta:
+  author: "ftw-tests-schema"
+  name: "templateTest"
+  description: "YAML to test template test parsing."
+rule_id: 123456
+tests:
+  - test_id: 1
+    desc: "Template test for Unix RCE."
+    templates:
+      - key: uri
+        values:
+          - /get
+          - /get?foo=bar
+      - key: command
+        values:
+          - php
+          - php%20foo
+    stages:
+      - input:
+          dest_addr: "192.168.0.1"
+          port: 8080
+          protocol: "http"
+          uri: "{{ .uri }}"
+          method: "POST"
+          data: "cmd={{ .command }}"
+          headers:
+            User-Agent: "CRS Tests"
+            Host: "localhost"
+            Accept: "*/*"
+        output:
+          status: 200
+`
+
+func TestUnmarshalTemplateTest(t *testing.T) {
+	var ftw FTWTest
+	assertions := assert.New(t)
+
+	err := yaml.Unmarshal([]byte(templateTestYaml), &ftw)
+	assertions.NoError(err)
+
+	assertions.Equal(uint(123456), ftw.RuleId)
+	assertions.Len(ftw.Tests, 1)
+
+	test := ftw.Tests[0]
+	assertions.Equal(uint(1), test.TestId)
+	assertions.Equal("Template test for Unix RCE.", test.TestDescription)
+	assertions.Len(test.Templates, 2)
+	assertions.Len(test.Stages, 1)
+
+	uriTemplate := test.Templates[0]
+	assertions.Equal("uri", uriTemplate.Key)
+	assertions.Equal([]string{"/get", "/get?foo=bar"}, uriTemplate.Values)
+
+	commandTemplate := test.Templates[1]
+	assertions.Equal("command", commandTemplate.Key)
+	assertions.Equal([]string{"php", "php%20foo"}, commandTemplate.Values)
+
+	stage := test.Stages[0]
+	assertions.NotNil(stage.Input.URI)
+	assertions.Equal("{{ .uri }}", *stage.Input.URI)
+	assertions.NotNil(stage.Input.Data)
+	assertions.Equal("cmd={{ .command }}", *stage.Input.Data)
+}
+
+func TestMarshalTemplateTest(t *testing.T) {
+	assertions := assert.New(t)
+
+	data, err := yaml.Marshal(ExampleTemplateTest)
+	assertions.NoError(err)
+
+	var roundtrip Test
+	err = yaml.Unmarshal(data, &roundtrip)
+	assertions.NoError(err)
+
+	assertions.Len(roundtrip.Templates, len(ExampleTemplates))
+	for i, tmpl := range roundtrip.Templates {
+		assertions.Equal(ExampleTemplates[i].Key, tmpl.Key)
+		assertions.Equal(ExampleTemplates[i].Values, tmpl.Values)
+	}
+}
+
 func TestUnmarshalFTWTest(t *testing.T) {
 	var ftw FTWTest
 	assertions := assert.New(t)
