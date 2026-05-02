@@ -79,10 +79,10 @@ type FTWTestMeta struct {
 	Tags []string `yaml:"tags,omitempty" json:"tags,omitempty"`
 }
 
-// TemplateKey defines a template variable with a name and a list of possible values.
+// TemplateDefinition defines a template variable with a name and a list of possible values.
 // Tests that use template variables will be expanded into multiple test instances,
 // one for each combination of values (i.e., the cross-product of all template values).
-type TemplateKey struct {
+type TemplateDefinition struct {
 	// description: |
 	//   Key is the name of the template variable. It can be referenced in input fields
 	//   using Go template syntax, e.g. `{{ .key }}`.
@@ -158,7 +158,7 @@ type Test struct {
 	//   e.g. `{{ .uri }}` or `{{ .command }}`.
 	// examples:
 	//   - value: ExampleTemplates
-	Templates []TemplateKey `yaml:"templates,omitempty" json:"templates,omitempty"`
+	Templates []TemplateDefinition `yaml:"templates,omitempty" json:"templates,omitempty"`
 }
 
 // IdString prints the human readable ID of a test in the format

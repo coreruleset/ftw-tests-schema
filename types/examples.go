@@ -20,7 +20,7 @@ var (
 		Templates:       ExampleTemplates,
 		Stages:          ExampleTemplateStages,
 	}
-	ExampleTemplates = []TemplateKey{
+	ExampleTemplates = []TemplateDefinition{
 		{
 			Key:    "uri",
 			Values: []string{"/get", "/get?foo=bar"},

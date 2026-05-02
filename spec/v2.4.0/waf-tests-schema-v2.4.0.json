@@ -226,7 +226,7 @@
       ],
       "type": "object"
     },
-    "TemplateKey": {
+    "TemplateDefinition": {
       "additionalProperties": false,
       "properties": {
         "key": {
@@ -265,7 +265,7 @@
         },
         "templates": {
           "items": {
-            "$ref": "#/$defs/TemplateKey"
+            "$ref": "#/$defs/TemplateDefinition"
           },
           "type": "array"
         },
