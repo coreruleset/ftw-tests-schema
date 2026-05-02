@@ -7,7 +7,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -17,7 +16,6 @@ import (
 	"slices"
 
 	"github.com/invopop/jsonschema"
-	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 
 	"github.com/coreruleset/ftw-tests-schema/v2/types"
@@ -27,22 +25,8 @@ import (
 var addLicenseVersion = "v1.1.1" // https://github.com/google/addlicense
 var gosImportsVer = "v0.3.8"     // https://github.com/rinchsan/gosimports/releases/tag/v0.3.8
 
-var errRunGoModTidy = errors.New("go.mod/sum not formatted, commit changes")
-var errNoGitDir = errors.New("no .git directory found")
-var errUpdateGeneratedFiles = errors.New("generated files need to be updated")
-
-// Generate Go documentation files for YAML structures
-func Generate() error {
-	if err := sh.RunV("go", "generate", "./..."); err != nil {
-		return err
-	}
-	return nil
-}
-
 // Format formats code in this repository.
 func Format() error {
-	mg.SerialDeps(Generate)
-
 	if err := sh.RunV("go", "mod", "tidy"); err != nil {
 		return err
 	}
@@ -66,35 +50,11 @@ func Format() error {
 
 // Test runs all tests.
 func Test() error {
-	mg.SerialDeps(Generate)
-
 	if err := sh.RunV("go", "test", "./..."); err != nil {
 		return err
 	}
 
 	return nil
-}
-
-// Generate Markdown output (printed to terminal)
-func Markdown() error {
-	mg.SerialDeps(Generate)
-	generatorBinary := "generate-doc-yaml-schema"
-
-	if err := sh.RunV("go", "build", "./cmd/"+generatorBinary); err != nil {
-		return err
-	}
-
-	defer os.Remove(generatorBinary)
-
-	markdown, err := sh.Output("./" + generatorBinary)
-	if err != nil {
-		return err
-	}
-	// Write markdown to file
-	fmt.Println(markdown)
-
-	return nil
-
 }
 
 // Writes JSON schemas based on the current version.
