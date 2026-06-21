@@ -1,4 +1,4 @@
-module github.com/coreruleset/ftw-tests-schema/v2
+module github.com/coreruleset/ftw-tests-schema/v3
 
 go 1.25.7
 

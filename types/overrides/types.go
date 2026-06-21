@@ -6,7 +6,7 @@
 package overrides
 
 import (
-	"github.com/coreruleset/ftw-tests-schema/v2/types"
+	"github.com/coreruleset/ftw-tests-schema/v3/types"
 )
 
 // FTWOverrides describes platform specific overrides for tests

@@ -5,7 +5,11 @@
 
 package types
 
-import "fmt"
+import (
+	"fmt"
+
+	"gopkg.in/yaml.v3"
+)
 
 // Welcome to the FTW YAMLFormat documentation.
 // In this document we will explain all the possible options that can be used within the YAML format.
@@ -24,6 +28,18 @@ type FTWTest struct {
 	//   - name: RuleId
 	//     value: 123456
 	RuleId uint `yaml:"rule_id" json:"rule_id"`
+
+	// description: |
+	//   Template defines the default HTTP request structure for all payload-based tests in this file.
+	//
+	//   Field values in URI, Data, and header values may contain Go template expressions.
+	//   The primary template variable is {{.Payload}}, which is substituted with the test's
+	//   `payload` field before the request is sent.
+	//
+	//   Per-test `template` fields override individual fields from this file-level template.
+	// examples:
+	//   - value: ExampleRequestTemplate
+	Template *RequestTemplate `yaml:"template,omitempty" json:"template,omitempty"`
 
 	// description: |
 	//   Tests is a list of FTW tests
@@ -80,6 +96,14 @@ type FTWTestMeta struct {
 }
 
 // Test is an individual test case. One test can have multiple stages.
+//
+// V3 simplified format: set `payload` (and optionally `template`) instead of `stages`.
+// The file-level `template` is used to build the HTTP request, with `{{.Payload}}`
+// substituted from the test's `payload` field.
+//
+// V2 compatible format: set `stages` explicitly as before.
+//
+// The YAML fields `id` and `description` are accepted as aliases for `test_id` and `desc`.
 type Test struct {
 	// description: |
 	//   TestTitle is the title of this particular types. It is used for inclusion/exclusion of each run by the tool.
@@ -101,8 +125,9 @@ type Test struct {
 	// description: |
 	//   TestId is the ID of the test, in relation to `rule_id`.
 	//
-	//   When this field is not set, the ID will be inferred from the
-	//   position.
+	//   When this field is not set, the ID will be inferred from the position.
+	//
+	//   Also accepted as `id` (v3 shorthand).
 	// examples:
 	//   - name: TestId
 	//     value: 4
@@ -112,15 +137,48 @@ type Test struct {
 	//   TestDescription is the description for this particular test.
 	//
 	//   Should be used to describe the internals of the specific things this test is targeting.
+	//
+	//   Also accepted as `description` (v3 shorthand).
 	// examples:
 	//   - value: ExampleTest.TestDescription
 	TestDescription string `yaml:"desc,omitempty" json:"desc,omitempty"`
 
 	// description: |
+	//   Payload is the string injected into {{.Payload}} slots in the request template.
+	//
+	//   When set, the test runs using the file-level `template` (or a per-test `template`
+	//   override) to build the HTTP request. The `stages` field must be empty when `payload`
+	//   is set.
+	// examples:
+	//   - name: Payload
+	//     value: "\"1 UNION SELECT 1,2,3--\""
+	Payload *string `yaml:"payload,omitempty" json:"payload,omitempty"`
+
+	// description: |
+	//   Template overrides specific fields of the file-level request template for this test.
+	//   Only fields that are set here take precedence over the file-level template;
+	//   unset fields fall through to the file-level template.
+	//
+	//   Requires `payload` to be set (or a file-level template with a different payload point).
+	// examples:
+	//   - value: ExampleRequestTemplate
+	Template *RequestTemplate `yaml:"template,omitempty" json:"template,omitempty"`
+
+	// description: |
+	//   Output defines the expected result for a payload-based test (when `payload` is set
+	//   and `stages` is empty). Equivalent to the `output` field inside a stage for explicit
+	//   stage-based tests.
+	// examples:
+	//   - value: ExampleOutput
+	Output *Output `yaml:"output,omitempty" json:"output,omitempty"`
+
+	// description: |
 	//   Stages is the list of all the stages to perform this test.
+	//
+	//   Use the v3 `payload` + `template` format instead for simple single-stage tests.
 	// examples:
 	//   - value: ExampleStages
-	Stages []Stage `yaml:"stages" json:"stages"`
+	Stages []Stage `yaml:"stages,omitempty" json:"stages,omitempty"`
 
 	// description: |
 	//   Tags is list of strings that can be used for arbitrary grouping of tests.
@@ -130,11 +188,144 @@ type Test struct {
 	Tags []string `yaml:"tags,omitempty" json:"tags,omitempty"`
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler to accept v3 shorthand field names
+// `id` (alias for `test_id`) and `description` (alias for `desc`).
+func (t *Test) UnmarshalYAML(value *yaml.Node) error {
+	type rawTest struct {
+		TestTitle       string           `yaml:"test_title,omitempty"`
+		TestId          uint             `yaml:"test_id"`
+		Id              uint             `yaml:"id"`
+		TestDescription string           `yaml:"desc,omitempty"`
+		Description     string           `yaml:"description,omitempty"`
+		Payload         *string          `yaml:"payload,omitempty"`
+		Template        *RequestTemplate `yaml:"template,omitempty"`
+		Output          *Output          `yaml:"output,omitempty"`
+		Stages          []Stage          `yaml:"stages,omitempty"`
+		Tags            []string         `yaml:"tags,omitempty"`
+	}
+	var raw rawTest
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	t.TestTitle = raw.TestTitle
+	t.TestId = raw.TestId
+	if t.TestId == 0 {
+		t.TestId = raw.Id
+	}
+	t.TestDescription = raw.TestDescription
+	if t.TestDescription == "" {
+		t.TestDescription = raw.Description
+	}
+	t.Payload = raw.Payload
+	t.Template = raw.Template
+	t.Output = raw.Output
+	t.Stages = raw.Stages
+	t.Tags = raw.Tags
+	return nil
+}
+
 // IdString prints the human readable ID of a test in the format
 // <rule ID>-<test ID>. This format is also used when matching
 // the include / exclude regular expressions.
 func (t *Test) IdString() string {
 	return fmt.Sprintf("%d-%d", t.RuleId, t.TestId)
+}
+
+// RequestTemplate defines the HTTP request structure used for payload-based tests.
+//
+// A file may declare one RequestTemplate at the top level; individual tests may
+// override specific fields via their own `template` section. Fields left unset
+// in a per-test template fall through to the file-level template.
+//
+// The following fields are template-capable and accept Go template expressions.
+// Use {{.Payload}} to inject the test's `payload` string:
+//   - URI      (e.g. /?q={{.Payload}})
+//   - Data     (e.g. param={{.Payload}})
+//   - Header values inside the Headers list
+type RequestTemplate struct {
+	// description: |
+	//   DestAddr is the IP or hostname of the destination host.
+	// examples:
+	//   - name: DestAddr
+	//     value: "\"127.0.0.1\""
+	DestAddr *string `yaml:"dest_addr,omitempty" json:"dest_addr,omitempty"`
+
+	// description: |
+	//   Port is the port on the destination host.
+	// examples:
+	//   - name: Port
+	//     value: 80
+	Port *int `yaml:"port,omitempty" json:"port,omitempty"`
+
+	// description: |
+	//   Protocol is the protocol to use (e.g. "http" or "https").
+	// examples:
+	//   - name: Protocol
+	//     value: "\"http\""
+	Protocol *string `yaml:"protocol,omitempty" json:"protocol,omitempty"`
+
+	// description: |
+	//   URI is the request URI. Template-capable: use {{.Payload}} to inject the test payload.
+	// examples:
+	//   - name: URI
+	//     value: "\"/?q={{.Payload}}\""
+	URI *string `yaml:"uri,omitempty" json:"uri,omitempty"`
+
+	// description: |
+	//   Version is the HTTP version (e.g. "1.1").
+	// examples:
+	//   - name: Version
+	//     value: "\"1.1\""
+	Version *string `yaml:"version,omitempty" json:"version,omitempty"`
+
+	// description: |
+	//   Method is the HTTP method (e.g. "GET", "POST").
+	// examples:
+	//   - name: Method
+	//     value: "\"GET\""
+	Method *string `yaml:"method,omitempty" json:"method,omitempty"`
+
+	// description: |
+	//   Headers is the ordered list of request headers to send. Header values are
+	//   template-capable: use {{.Payload}} to inject the test payload into a header value.
+	// examples:
+	//   - name: Headers
+	//     value: ExampleOrderedHeaders
+	Headers []HeaderTuple `yaml:"headers,omitempty" json:"headers,omitempty"`
+
+	// description: |
+	//   Data is the request body. Template-capable: use {{.Payload}} to inject the test payload.
+	// examples:
+	//   - name: Data
+	//     value: "\"param={{.Payload}}\""
+	Data *string `yaml:"data,omitempty" json:"data,omitempty"`
+
+	// description: |
+	//   AutocompleteHeaders controls whether the framework automatically adds Content-Type
+	//   and Connection headers. Set to false for tests that craft specific header combinations
+	//   or rely on the absence of these headers.
+	//
+	//   Defaults: true.
+	// examples:
+	//   - name: AutocompleteHeaders
+	//     value: false
+	AutocompleteHeaders *bool `yaml:"autocomplete_headers,omitempty" json:"autocomplete_headers,omitempty"`
+
+	// description: |
+	//   StopMagic disables automatic header completion (deprecated alias for autocomplete_headers: false).
+	// examples:
+	//   - name: StopMagic
+	//     value: false
+	//
+	// Deprecated: use AutocompleteHeaders instead
+	StopMagic *bool `yaml:"stop_magic,omitempty" json:"stop_magic,omitempty"`
+
+	// description: |
+	//   SaveCookie enables automatic cookie propagation across stages.
+	// examples:
+	//   - name: SaveCookie
+	//     value: false
+	SaveCookie *bool `yaml:"save_cookie,omitempty" json:"save_cookie,omitempty"`
 }
 
 // Stage is a list of stages
