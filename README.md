@@ -184,7 +184,7 @@ if err := yaml.Unmarshal(data, &test); err != nil {
 
 ### Prerequisites
 
-```
+```bash
 go install github.com/projectdiscovery/yamldoc-go/cmd/docgen/dstdocgen@latest
 ```
 
@@ -202,7 +202,7 @@ go install github.com/projectdiscovery/yamldoc-go/cmd/docgen/dstdocgen@latest
 
 Create the version directory first, then run the schema generator:
 
-```
+```bash
 mkdir spec/v3.x.x
 mage jsonSchemas
 ```

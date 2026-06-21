@@ -126,22 +126,34 @@ type Test struct {
 	//   TestId is the ID of the test, in relation to `rule_id`.
 	//
 	//   When this field is not set, the ID will be inferred from the position.
-	//
-	//   Also accepted as `id` (v3 shorthand).
 	// examples:
 	//   - name: TestId
 	//     value: 4
-	TestId uint `yaml:"test_id" json:"test_id"`
+	TestId uint `yaml:"test_id" json:"test_id,omitempty"`
+
+	// description: |
+	//   Id is the v3 shorthand alias for test_id. Either field may be used; if both are
+	//   present, test_id takes precedence.
+	// examples:
+	//   - name: Id
+	//     value: 4
+	IdAlias uint `yaml:"-" json:"id,omitempty"`
 
 	// description: |
 	//   TestDescription is the description for this particular test.
 	//
 	//   Should be used to describe the internals of the specific things this test is targeting.
-	//
-	//   Also accepted as `description` (v3 shorthand).
 	// examples:
 	//   - value: ExampleTest.TestDescription
 	TestDescription string `yaml:"desc,omitempty" json:"desc,omitempty"`
+
+	// description: |
+	//   Description is the v3 shorthand alias for desc. Either field may be used; if both are
+	//   present, desc takes precedence.
+	// examples:
+	//   - name: Description
+	//     value: "\"Unix RCE using time\""
+	DescriptionAlias string `yaml:"-" json:"description,omitempty"`
 
 	// description: |
 	//   Payload is the string injected into {{.Payload}} slots in the request template.
@@ -258,7 +270,7 @@ type RequestTemplate struct {
 	Port *int `yaml:"port,omitempty" json:"port,omitempty"`
 
 	// description: |
-	//   Protocol is the protocol to use (e.g. "http" or "https").
+	//   Protocol is the protocol to use (http or https).
 	// examples:
 	//   - name: Protocol
 	//     value: "\"http\""
@@ -272,14 +284,14 @@ type RequestTemplate struct {
 	URI *string `yaml:"uri,omitempty" json:"uri,omitempty"`
 
 	// description: |
-	//   Version is the HTTP version (e.g. "1.1").
+	//   Version is the HTTP version (e.g. 1.1).
 	// examples:
 	//   - name: Version
 	//     value: "\"1.1\""
 	Version *string `yaml:"version,omitempty" json:"version,omitempty"`
 
 	// description: |
-	//   Method is the HTTP method (e.g. "GET", "POST").
+	//   Method is the HTTP method (e.g. GET, POST).
 	// examples:
 	//   - name: Method
 	//     value: "\"GET\""
@@ -654,6 +666,6 @@ type Log struct {
 
 // Header represents the (name, value) tuple of an HTTP header
 type HeaderTuple struct {
-	Name  string
-	Value string
+	Name  string `yaml:"name" json:"name"`
+	Value string `yaml:"value" json:"value"`
 }
