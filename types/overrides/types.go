@@ -48,7 +48,7 @@ type FTWOverridesMeta struct {
 	//   Custom annotations; can be used to add additional meta information
 	// examples:
 	//   - value: AnnotationsExample
-	Annotations map[string]string `yaml:"annotations" json:"annotations" jsonschema:"type=array"`
+	Annotations map[string]string `yaml:"annotations" json:"annotations"`
 }
 
 // TestOverride describes overrides for a single test
