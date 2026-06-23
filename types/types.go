@@ -192,7 +192,7 @@ type Input struct {
 	//   Port allows you to declare which port on the destination host the test should connect to.
 	// examples:
 	//   - name: Port
-	//     value: 80
+	//     value: true
 	Port *int `yaml:"port,omitempty" json:"port,omitempty" koanf:"port,omitempty"`
 
 	// description: |
@@ -271,7 +271,7 @@ type Input struct {
 	//   SaveCookie allows you to automatically provide cookies if there are multiple stages and save cookie is set
 	// examples:
 	//   - name: SaveCookie
-	//     value: 80
+	//     value: true
 	SaveCookie *bool `yaml:"save_cookie,omitempty" json:"save_cookie,omitempty" koanf:"save_cookie,omitempty"`
 
 	// description: |
