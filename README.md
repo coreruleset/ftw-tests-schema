@@ -64,7 +64,7 @@ tests:
 
 ### Field name aliases
 
-For a cleaner authoring experience, v3 accepts short aliases for two common fields:
+For a cleaner authoring experience, v3 accepts aliases for two common fields:
 
 | v3 alias | Canonical field |
 |----------|----------------|

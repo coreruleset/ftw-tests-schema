@@ -32,7 +32,7 @@ type FTWTest struct {
 	// description: |
 	//   Template defines the default HTTP request structure for all payload-based tests in this file.
 	//
-	//   Field values in URI, Data, and header values may contain Go template expressions.
+	//   Field values in uri, data, and header values may contain Go template expressions.
 	//   The primary template variable is {{.Payload}}, which is substituted with the test's
 	//   `payload` field before the request is sent.
 	//
@@ -148,7 +148,7 @@ type Test struct {
 	TestDescription string `yaml:"desc,omitempty" json:"desc,omitempty"`
 
 	// description: |
-	//   Description is the v3 shorthand alias for desc. Either field may be used; if both are
+	//   Description is the v3 alias for desc. Either field may be used; if both are
 	//   present, desc takes precedence.
 	// examples:
 	//   - name: Description
@@ -200,8 +200,7 @@ type Test struct {
 	Tags []string `yaml:"tags,omitempty" json:"tags,omitempty"`
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler to accept v3 shorthand field names
-// `id` (alias for `test_id`) and `description` (alias for `desc`).
+// UnmarshalYAML parses a YAML document into a Test
 func (t *Test) UnmarshalYAML(value *yaml.Node) error {
 	type rawTest struct {
 		TestTitle       string           `yaml:"test_title,omitempty"`
