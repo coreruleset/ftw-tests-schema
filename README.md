@@ -36,14 +36,6 @@ tests:
         no_expect_ids: [942100]
 ```
 
-### Template variables
-
-The following template variables are available inside `uri`, `data`, and header values:
-
-| Variable | Description |
-|----------|-------------|
-| `{{.Payload}}` | The raw `payload` string from the test |
-
 ### Per-test template override
 
 A test can override individual fields from the file-level template via its own `template` section. Only fields that are set in the per-test template take precedence; the rest fall through to the file-level template.
@@ -62,12 +54,20 @@ tests:
         expect_ids: [942100]
 ```
 
+### Template variables
+
+The following template variables are available inside `uri`, `data`, and header values:
+
+| Variable | Description |
+|----------|-------------|
+| `{{.Payload}}` | The raw `payload` string from the test |
+
 ### Field name aliases
 
-For a cleaner authoring experience, v3 accepts aliases for two common fields:
+In v3, `id` and `description` are the canonical field names. The v2 names are accepted as deprecated aliases:
 
-| v3 alias | Canonical field |
-|----------|----------------|
+| v3 canonical | Deprecated v2 alias |
+|--------------|---------------------|
 | `id` | `test_id` |
 | `description` | `desc` |
 
@@ -211,7 +211,7 @@ mage jsonSchemas
 
 | Version | Spec | Comment |
 |---------|------|---------|
-| v3.0.0 | [spec/v3.0.0](spec/v3.0.0) | Go template support (`{{.Payload}}`), file-level `template`, per-test `payload` and `output`, `id`/`description` aliases; module path → `v3` |
+| v3.0.0 | [spec/v3.0.0](spec/v3.0.0) | Go template support (`{{.Payload}}`), file-level `template`, per-test `payload` and `output`; `id`/`description` canonical (`test_id`/`desc` deprecated); module path → `v3` |
 | v2.3.0 | [spec/v2.3.0](spec/v2.3.0) | Dependency updates; no schema changes |
 | v2.2.0 | [spec/v2.2.0](spec/v2.2.0) | Added `ordered_headers` (`[]HeaderTuple`) to preserve header order and allow duplicate header names; `headers` map deprecated |
 | v2.1.1 | [spec/v2.1.1](spec/v2.1.1) | Added `virtual_host_mode` to `Input` for tests running against a virtual host |

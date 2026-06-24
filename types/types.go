@@ -103,7 +103,7 @@ type FTWTestMeta struct {
 //
 // V2 compatible format: set `stages` explicitly as before.
 //
-// The YAML fields `id` and `description` are accepted as aliases for `test_id` and `desc`.
+// The v2 YAML fields `test_id` and `desc` are accepted as deprecated aliases for `id` and `description`.
 type Test struct {
 	// description: |
 	//   TestTitle is the title of this particular types. It is used for inclusion/exclusion of each run by the tool.
@@ -123,37 +123,25 @@ type Test struct {
 	RuleId uint `json:"-"`
 
 	// description: |
-	//   TestId is the ID of the test, in relation to `rule_id`.
+	//   Id is the ID of the test, relative to `rule_id`.
 	//
 	//   When this field is not set, the ID will be inferred from the position.
-	// examples:
-	//   - name: TestId
-	//     value: 4
-	TestId uint `yaml:"test_id" json:"test_id,omitempty"`
-
-	// description: |
-	//   Id is the v3 shorthand alias for test_id. Either field may be used; if both are
-	//   present, test_id takes precedence.
+	//
+	//   The v2 field name `test_id` is accepted as a deprecated alias.
 	// examples:
 	//   - name: Id
 	//     value: 4
-	IdAlias uint `yaml:"-" json:"id,omitempty"`
+	TestId uint `yaml:"id" json:"id,omitempty"`
 
 	// description: |
-	//   TestDescription is the description for this particular test.
+	//   Description is the description for this particular test.
 	//
 	//   Should be used to describe the internals of the specific things this test is targeting.
+	//
+	//   The v2 field name `desc` is accepted as a deprecated alias.
 	// examples:
 	//   - value: ExampleTest.TestDescription
-	TestDescription string `yaml:"desc,omitempty" json:"desc,omitempty"`
-
-	// description: |
-	//   Description is the v3 alias for desc. Either field may be used; if both are
-	//   present, desc takes precedence.
-	// examples:
-	//   - name: Description
-	//     value: "\"Unix RCE using time\""
-	DescriptionAlias string `yaml:"-" json:"description,omitempty"`
+	TestDescription string `yaml:"description,omitempty" json:"description,omitempty"`
 
 	// description: |
 	//   Payload is the string injected into {{.Payload}} slots in the request template.
@@ -202,36 +190,25 @@ type Test struct {
 
 // UnmarshalYAML parses a YAML document into a Test
 func (t *Test) UnmarshalYAML(value *yaml.Node) error {
-	type rawTest struct {
-		TestTitle       string           `yaml:"test_title,omitempty"`
-		TestId          uint             `yaml:"test_id"`
-		Id              uint             `yaml:"id"`
-		TestDescription string           `yaml:"desc,omitempty"`
-		Description     string           `yaml:"description,omitempty"`
-		Payload         *string          `yaml:"payload,omitempty"`
-		Template        *RequestTemplate `yaml:"template,omitempty"`
-		Output          *Output          `yaml:"output,omitempty"`
-		Stages          []Stage          `yaml:"stages,omitempty"`
-		Tags            []string         `yaml:"tags,omitempty"`
-	}
+	type rawTest Test // strips methods to avoid infinite recursion
 	var raw rawTest
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
-	t.TestTitle = raw.TestTitle
-	t.TestId = raw.TestId
-	if t.TestId == 0 {
-		t.TestId = raw.Id
+	*t = Test(raw)
+	// Handle deprecated v2 aliases: test_id → id, desc → description
+	var legacy struct {
+		TestId uint   `yaml:"test_id"`
+		Desc   string `yaml:"desc"`
 	}
-	t.TestDescription = raw.TestDescription
-	if t.TestDescription == "" {
-		t.TestDescription = raw.Description
+	if err := value.Decode(&legacy); err == nil {
+		if t.TestId == 0 && legacy.TestId != 0 {
+			t.TestId = legacy.TestId
+		}
+		if t.TestDescription == "" && legacy.Desc != "" {
+			t.TestDescription = legacy.Desc
+		}
 	}
-	t.Payload = raw.Payload
-	t.Template = raw.Template
-	t.Output = raw.Output
-	t.Stages = raw.Stages
-	t.Tags = raw.Tags
 	return nil
 }
 

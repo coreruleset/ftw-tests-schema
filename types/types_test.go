@@ -103,8 +103,8 @@ var ftwTest = &FTWTest{
 // testV3Yaml exercises the v3 simplified format:
 //   - file-level template with {{.Payload}} in the URI
 //   - per-test `payload` field
-//   - `id` as alias for `test_id`
-//   - `description` as alias for `desc`
+//   - `id` and `description` as canonical v3 field names
+//   - `test_id` and `desc` as deprecated v2 aliases (backward compat)
 //   - test-level `output` (no explicit stages)
 var testV3Yaml = `---
 meta:
