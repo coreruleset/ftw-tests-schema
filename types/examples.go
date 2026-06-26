@@ -3,7 +3,7 @@
 
 package types
 
-import "github.com/coreruleset/ftw-tests-schema/v2/internal/helpers"
+import "github.com/coreruleset/ftw-tests-schema/v3/internal/helpers"
 
 var (
 	ExampleTests = []Test{
@@ -79,5 +79,29 @@ var (
 		Body:        ExampleResponseBody,
 		EncodedBody: ExampleEncodedResponseBody,
 		LogMessage:  "Response splitting test 1",
+	}
+
+	// v3 template examples
+	ExampleRequestTemplate = &RequestTemplate{
+		Method:   helpers.StrPtr("GET"),
+		URI:      helpers.StrPtr("/?q={{.Payload}}"),
+		Protocol: helpers.StrPtr("http"),
+		Headers: []HeaderTuple{
+			{"Host", "localhost"},
+			{"User-Agent", "CRS Tests"},
+			{"Accept", "*/*"},
+		},
+	}
+	ExamplePayload     = helpers.StrPtr("1 UNION SELECT 1,2,3--")
+	ExampleV3TestOutput = &Output{
+		Log: Log{
+			ExpectIds: []uint{942100},
+		},
+	}
+	ExampleV3Test = Test{
+		TestId:          1,
+		TestDescription: "UNION-based SQL injection",
+		Payload:         ExamplePayload,
+		Output:          ExampleV3TestOutput,
 	}
 )
