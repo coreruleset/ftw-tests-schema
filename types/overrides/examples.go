@@ -3,7 +3,7 @@
 
 package overrides
 
-import "github.com/coreruleset/ftw-tests-schema/v2/types"
+import "github.com/coreruleset/ftw-tests-schema/v3/types"
 
 var (
 	// imported
