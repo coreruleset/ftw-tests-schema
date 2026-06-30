@@ -450,7 +450,7 @@ type Input struct {
 	//   SaveCookie allows you to automatically provide cookies if there are multiple stages and save cookie is set
 	// examples:
 	//   - name: SaveCookie
-	//     value: 80
+	//     value: true
 	SaveCookie *bool `yaml:"save_cookie,omitempty" json:"save_cookie,omitempty" koanf:"save_cookie,omitempty"`
 
 	// description: |
@@ -467,7 +467,7 @@ type Input struct {
 	//
 	//   Defaults: `true`.
 	// examples:
-	//   - name: StopMagic
+	//   - name: AutocompleteHeaders
 	//     value: false
 	AutocompleteHeaders *bool `yaml:"autocomplete_headers,omitempty" json:"autocomplete_headers,omitempty" koanf:"autocomplete_headers,omitempty"`
 
@@ -618,7 +618,7 @@ type Log struct {
 	// description: |
 	//   Expect the given IDs to be contained in the log output.
 	// examples:
-	//   -value: ExampleLog.ExpectIds
+	//   - value: ExampleLog.ExpectIds
 	ExpectIds []uint `yaml:"expect_ids,omitempty" json:"expect_ids,omitempty"`
 
 	// description: |
